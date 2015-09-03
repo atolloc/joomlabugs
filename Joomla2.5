@@ -1,0 +1,17 @@
+   
+\libraries\joomla\application\component\model.php
+Fix very slow pagination function. This bug is present in large tables. 
+  
+  protected function _getListCount($query) {
+    if ($query instanceof JDatabaseQuery) {
+      $query = clone $query;
+      $query->clear('select')->clear('order')->clear('join')->select('COUNT(*)');
+      $this->_db->setQuery($query);
+      return (int) $this->_db->loadResult();
+    }
+
+    $this->_db->setQuery($query);
+    $this->_db->execute();
+
+    return (int) $this->_db->getNumRows();
+  }
